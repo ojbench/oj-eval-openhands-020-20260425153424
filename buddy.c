@@ -103,7 +103,7 @@ int return_pages(void *p) {
     if (!p) return -EINVAL;
     
     // Check if the address is within our memory range
-    if (p < memory_start || p >= (char *)memory_start + total_pages * PAGE_SIZE) {
+    if (p < memory_start || p >= (void *)((char *)memory_start + total_pages * PAGE_SIZE)) {
         return -EINVAL;
     }
     
@@ -176,7 +176,7 @@ int query_ranks(void *p) {
     if (!p) return -EINVAL;
     
     // Check if the address is within our memory range
-    if (p < memory_start || p >= (char *)memory_start + total_pages * PAGE_SIZE) {
+    if (p < memory_start || p >= (void *)((char *)memory_start + total_pages * PAGE_SIZE)) {
         return -EINVAL;
     }
     
