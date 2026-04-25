@@ -194,7 +194,7 @@ int query_ranks(void *p) {
     } else {
         // For unallocated blocks, find the rank of the free block containing this page
         // Search through free lists to find which block contains this page
-        for (int rank = 1; rank <= MAX_RANK; rank++) {
+        for (int rank = MAX_RANK; rank >= 1; rank--) {
             int block_size = 1 << (rank - 1);
             block_t *current = free_lists[rank];
             while (current) {
@@ -205,14 +205,9 @@ int query_ranks(void *p) {
                 current = current->next;
             }
         }
-        // If not found in any free list, return the maximum possible rank
-        int max_possible_rank = 1;
-        int pages_remaining = total_pages - block_index;
-        while (pages_remaining > 1 && max_possible_rank < MAX_RANK) {
-            pages_remaining = (pages_remaining + 1) / 2;
-            max_possible_rank++;
-        }
-        return max_possible_rank;
+        // If not found in any free list, this page is part of a larger allocated block
+        // that was split, so return its individual rank
+        return block->rank;
     }
 }
 
