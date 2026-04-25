@@ -1,4 +1,3 @@
-
 #define ok(expr)                                                         \
     do {                                                                 \
         if (!((expr) || fake_mode)) {                                    \
