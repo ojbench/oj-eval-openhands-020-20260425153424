@@ -192,7 +192,20 @@ int query_ranks(void *p) {
     if (block->allocated) {
         return block->rank;
     } else {
-        // For unallocated blocks, return the maximum possible rank
+        // For unallocated blocks, find the rank of the free block containing this page
+        // Search through free lists to find which block contains this page
+        for (int rank = 1; rank <= MAX_RANK; rank++) {
+            int block_size = 1 << (rank - 1);
+            block_t *current = free_lists[rank];
+            while (current) {
+                int current_index = current - blocks;
+                if (block_index >= current_index && block_index < current_index + block_size) {
+                    return rank;
+                }
+                current = current->next;
+            }
+        }
+        // If not found in any free list, return the maximum possible rank
         int max_possible_rank = 1;
         int pages_remaining = total_pages - block_index;
         while (pages_remaining > 1 && max_possible_rank < MAX_RANK) {
